@@ -12,7 +12,10 @@ namespace Adventure_Game
        
         public Creature()
         {
-            creatureName = "name";
+            if (this is Goblin)
+                creatureName = "Goblin";
+            else
+creatureName = "name";
             creatureHitPoints = 0;
             isAlive = true;
         }
@@ -60,7 +63,7 @@ namespace Adventure_Game
 
         public Hero () : base ()
         {
-            heroName = "";
+            //heroName = "";
             creatureHitPoints = 50;
         }
         public Hero (string name, int hitPoints ) : base (name, hitPoints)
@@ -74,9 +77,14 @@ namespace Adventure_Game
 
     class Goblin : Creature
     {
+        string goblinName;
+        public Goblin() : base("Goblin", 10)
+        {
+
+        }
         public Goblin (string name, int hitPoints, int agro) : base(name, hitPoints)
         {
-            name = "Goblin";
+            goblinName = "Goblin";
             hitPoints = 10;
             agro = 2;
         }
@@ -84,7 +92,7 @@ namespace Adventure_Game
 
     class lesserDemon : Creature
     {
-        public lesserDemon (string name, int hitPoints, int agro) : base(name, hitPoints)
+        public lesserDemon () : base("Lesser Demon", 20)
         {
             name = "Lesser Demon";
             hitPoints = 20;
@@ -142,8 +150,10 @@ namespace Adventure_Game
             Console.WriteLine("What is your character's name? ");
             characterName = Console.ReadLine();
             you.heroName = characterName;
-            Console.WriteLine("Name is: " + you.heroName + " Hp is: " + you.getHP());
+            Console.WriteLine("Name is: {0} Hp is: {1}", you.heroName, you.getHP());
             Console.ReadLine();
+
+            Goblin bob = new Goblin();
         }
     }
 }
