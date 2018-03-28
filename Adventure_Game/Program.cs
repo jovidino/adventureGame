@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Adventure_Game
 {
@@ -58,7 +58,17 @@ namespace Adventure_Game
     //Main Weapons class with subclasses below it
     class Weapons
     {
+        private int physicalAttack;
+        private int magicAttack;
+        private int numSwings;
 
+        Weapon(int p, int m)
+        {
+            physicalAttack = p;
+            magicAttack = m;
+        }
+
+        public int getDamage(Creature c);
     }
 
     class Sword : Weapons
@@ -102,3 +112,4 @@ namespace Adventure_Game
         }
     }
 }
+
