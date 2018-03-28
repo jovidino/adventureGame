@@ -7,23 +7,24 @@ namespace Adventure_Game
     {
         public string creatureName;
         public int creatureHitPoints;
-        public bool isAlive;
-        public Weapons weapon;
+        //aggression on scale of 1-10
+        public int creatureAgro;
+        //
+        public int creatureArmor;
+        public Weapon creatureWeapon;
        
         public Creature()
         {
-            if (this is Goblin)
-                creatureName = "Goblin";
-            else
-creatureName = "name";
-            creatureHitPoints = 0;
-            isAlive = true;
+            creatureName = "name";
+            creatureHitPoints = 1;
         }
-        public Creature (string name, int hitPoints)
+        public Creature (string name, int hitPoints, int agro, int armor)
         {
             creatureName = name;
             creatureHitPoints = hitPoints;
-
+            creatureAgro = agro;
+            creatureArmor = armor;
+            
         }
 
         public int getHP()
@@ -45,13 +46,38 @@ creatureName = "name";
         //method for fighting
         public void fight(Creature c)
         {
-            while(IsAlive() && c.IsAlive())
+            Random rnd = new Random();
+            while(this.IsAlive() && c.IsAlive())
             {
-                for(int i=0; i < weapon.numSwings; i++)
+                for(int i=0; i < creatureWeapon.numSwings; i++)
                 {
-
+                    int attackAttempt = rnd.Next(1, 21);
+                    //check to see if the roll is greater than the creature being attacked armor value
+                    if (attackAttempt > c.creatureArmor)
+                    {
+                        int dmg = rnd.Next(1,creatureWeapon.physicalAttack);
+                        c.creatureHitPoints -= dmg;
+                        Console.WriteLine("{0} hit {1} for {2} damage!", this.creatureName, c.creatureName, dmg);
+                    }
+                    else
+                    {
+                        Console.WriteLine("{0} couldn't hit through {1}'s armour!", this.creatureName, c.creatureName);
+                    }
+                    
+                }
+                //System.Threading.Thread.Sleep(4000);
+                if (c.IsAlive())
+                    c.fight(this);
+                else
+                {
+                    Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);
+                    //return 1;
                 }
             }
+            //if(IsAlive())
+            //Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);
+
+
         }
 
 
@@ -59,17 +85,16 @@ creatureName = "name";
     class Hero : Creature
     {
         public string[] items;
-        public string heroName;
+        public Weapon wep = new Sword(); 
 
-        public Hero () : base ()
+        /* hero starts with 10 armor and when additional items are picked up then he gains more armor
+         * base hp: 50, agro: 0 since user, name given in the beginning of program
+         * starting weapon is a Sword
+        */
+        public Hero () : base ("", 50, 0, 10)
         {
-            //heroName = "";
-            creatureHitPoints = 50;
-        }
-        public Hero (string name, int hitPoints ) : base (name, hitPoints)
-        {
-            heroName = name;
-            hitPoints = 50;
+            
+            creatureWeapon = wep;
         }
 
        
@@ -77,47 +102,76 @@ creatureName = "name";
 
     class Goblin : Creature
     {
-        string goblinName;
-        public Goblin() : base("Goblin", 10)
+        public Weapon wep = new Dagger();
+        /*
+         * goblin defaults to 15 hp, 2 aggression, 6 armor
+        */
+        public Goblin() : base("Goblin", 15, 2, 6)
         {
-
+            creatureWeapon = wep;
         }
-        public Goblin (string name, int hitPoints, int agro) : base(name, hitPoints)
-        {
-            goblinName = "Goblin";
-            hitPoints = 10;
-            agro = 2;
-        }
+       
     }
 
-    class lesserDemon : Creature
+    class LesserDemon : Creature
     {
-        public lesserDemon () : base("Lesser Demon", 20)
+        public Weapon wep = new DemonClaws();
+        public LesserDemon () : base("Lesser Demon", 20, 4, 12)
         {
-            name = "Lesser Demon";
-            hitPoints = 20;
-            agro = 4;
+            creatureWeapon = wep;
         }
     }
+
     
 
+
     //Main Weapons class with subclasses below it
-    class Weapons
+    class Weapon
     {
         public int numSwings;
         public int magicAttack;
         public int physicalAttack;
 
-
+        public Weapon(int n, int p, int m)
+        {
+            numSwings = n;
+            physicalAttack = p;
+            magicAttack = m;
+        }
     }
 
-    class Sword : Weapons
+    class Dagger : Weapon
     {
-        
+        /*
+         * 3 swings, up to 4 damage
+         */
+        public Dagger() : base(3, 4, 0)
+        {
+
+        }
     }
 
-    class TwoHander : Weapons
+    class Sword : Weapon
     {
+        public Sword() : base(2, 5, 0)
+        {
+
+        }
+    }
+
+    class DemonClaws : Weapon
+    {
+        public DemonClaws() : base (1, 8, 0)
+        {
+        }
+    }
+
+    class TwoHander : Weapon
+    {
+        public TwoHander() : base(1, 14, 0)
+        {
+
+        }
         //make sure when Two Hander is equiped have no other item in hand
     }
 
@@ -145,15 +199,32 @@ creatureName = "name";
             Hero you = new Hero();
             //variables
             string characterName;
+
+
+            //to do: initialize rooms, can just hardcode if we want
+
             Console.WriteLine("Welcome to the Start of the Adventure Game");
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine("What is your character's name? ");
             characterName = Console.ReadLine();
-            you.heroName = characterName;
-            Console.WriteLine("Name is: {0} Hp is: {1}", you.heroName, you.getHP());
-            Console.ReadLine();
+            you.creatureName = characterName;
+            Console.WriteLine("Name is: {0} Hp is: {1}", you.creatureName, you.getHP());
+            Console.WriteLine("He has a {0}", you.creatureWeapon.ToString());
+            
 
             Goblin bob = new Goblin();
+            Console.WriteLine("Name is: {0} Hp is: {1}", bob.creatureName, bob.creatureHitPoints);
+
+
+            you.fight(bob);
+
+            LesserDemon titsMcGee = new LesserDemon();
+            Console.WriteLine("Name is: {0} Hp is: {1} ", titsMcGee.creatureName, titsMcGee.creatureHitPoints);
+
+            you.fight(titsMcGee);
+
+            //prevents console from closing
+            Console.ReadLine();
         }
     }
 }
