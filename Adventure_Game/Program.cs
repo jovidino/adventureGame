@@ -163,6 +163,11 @@ namespace Adventure_Game
             Console.WriteLine("{0}", string.Join(",", items));
         }
 
+        public int MoveRooms(int roomToMoveTo)
+        {
+            return 1;
+        }
+
 
     }
 
@@ -412,8 +417,9 @@ namespace Adventure_Game
                         }
                         else
                         {
-                            you.fight(current.roomCreature);
                             turn = 0;
+                            you.fight(current.roomCreature);
+                            
                         }
                         break;
                     case "2":
@@ -424,7 +430,7 @@ namespace Adventure_Game
                         break;
                     case "4":
                         item = current.itemInRoom;
-                        if (item == null)
+                        if (item == "nothing")
                         {
                             Console.WriteLine("There are no items left in the room");
                             break;
@@ -432,7 +438,7 @@ namespace Adventure_Game
                         else
                         {
                             you.AddItem(item);
-                            current.itemInRoom = null;
+                            current.itemInRoom = "nothing";
                             break;
                         }
                     case "5":
