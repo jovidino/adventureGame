@@ -108,9 +108,7 @@ namespace Adventure_Game
                     //Hero wins the fight
                     if (this is Hero)
                     {
-                        Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);
-                        
-                        
+                        Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);                        
                     }
                     //Hero dies to the creature
                     else
@@ -161,6 +159,11 @@ namespace Adventure_Game
         {
             //Console.WriteLine("[{0}]", string.Join(", ", yourArray));
             Console.WriteLine("{0}", string.Join(",", items));
+        }
+
+        public int MoveRooms()
+        {
+            return 1;
         }
 
 
@@ -328,6 +331,8 @@ namespace Adventure_Game
         }
     }
 
+    
+
     class Program
     {
         static void Main(string[] args)
@@ -338,6 +343,7 @@ namespace Adventure_Game
             bool gameEnd = false;
             string command;
             string item;
+            int roomToMoveTo;
             //0 - creature can roll to agro 1 - user can go through menu
             int turn = 1;
 
@@ -412,8 +418,8 @@ namespace Adventure_Game
                         }
                         else
                         {
-                            you.fight(current.roomCreature);
                             turn = 0;
+                            you.fight(current.roomCreature);
                         }
                         break;
                     case "2":
@@ -424,7 +430,7 @@ namespace Adventure_Game
                         break;
                     case "4":
                         item = current.itemInRoom;
-                        if (item == null)
+                        if (item == "nothing")
                         {
                             Console.WriteLine("There are no items left in the room");
                             break;
@@ -432,11 +438,20 @@ namespace Adventure_Game
                         else
                         {
                             you.AddItem(item);
-                            current.itemInRoom = null;
+                            current.itemInRoom = "nothing";
                             break;
                         }
                     case "5":
                         //move rooms
+                        Console.WriteLine("Here are the exits for this room");
+                        foreach(var ex in current.exit)
+                        {
+                            Console.WriteLine(string.Join(",", current.exit));
+                        }
+                        Console.WriteLine("Which room do you want to exit to?");
+                        roomToMoveTo = Convert.ToInt32(Console.ReadLine());
+
+
                         break;
                     case "6":
                         gameEnd = true;
