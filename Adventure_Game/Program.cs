@@ -129,7 +129,7 @@ namespace Adventure_Game
         {
             Random rnd = new Random();
             int chance = rnd.Next(1, 11);
-            if ((chance + this.creatureAgro) > 8)
+            if ((chance + this.creatureAgro) > 8 && this.IsAlive())
             {
                 return true;
             }
@@ -138,7 +138,9 @@ namespace Adventure_Game
     }
     class Hero : Creature
     {
-        public string[] items;
+        //Hero can have 6 items
+        int numItems = 0;
+        public string[] items = new string[6];
         public Weapon wep = new Sword(); 
 
         /* hero starts with 10 armor and when additional items are picked up then he gains more armor
@@ -151,8 +153,9 @@ namespace Adventure_Game
         }
         public void AddItem(string itemToAdd)
         {
-            int whereToAdd = items.Length;
-            items[whereToAdd] = itemToAdd;
+            //int whereToAdd = items.Length;
+            items[numItems] = itemToAdd;
+            numItems++;
         }
         public void ShowInventory()
         {
@@ -334,6 +337,9 @@ namespace Adventure_Game
             string characterName;
             bool gameEnd = false;
             string command;
+            string item;
+            //0 - creature can roll to agro 1 - user can go through menu
+            int turn = 1;
 
             //create rooms
             Room[] rooms = new Room[8];
@@ -386,16 +392,16 @@ namespace Adventure_Game
                 }
                 else
                 {
-                    if (current.roomCreature.rollAgro())
+                    if (current.roomCreature.rollAgro() && turn == 0)
                     {
                         you.fight(current.roomCreature);
                     }
                     else
                         Console.WriteLine("The creature in the room doesn't attack but stays watching");
-                    //Console.WriteLine(current.roomCreature.creatureHitPoints);
+                    
                 }
                 
-                Console.WriteLine("menu: (1) fight, (2) exit game");
+                Console.WriteLine("menu: (1) fight, (2) use item, (3) display what's in room, (4) pick up items, (5) move rooms, (6) exit game");
                 command = Console.ReadLine();
                 switch (command)
                 {
@@ -405,26 +411,41 @@ namespace Adventure_Game
                             Console.WriteLine("The creature is dead! It cannot fight anymore!");
                         }
                         else
+                        {
                             you.fight(current.roomCreature);
+                            turn = 0;
+                        }
                         break;
                     case "2":
+                        //use item
+                        break;
+                    case "3":
+                        current.DisplayInformation();
+                        break;
+                    case "4":
+                        item = current.itemInRoom;
+                        if (item == null)
+                        {
+                            Console.WriteLine("There are no items left in the room");
+                            break;
+                        }
+                        else
+                        {
+                            you.AddItem(item);
+                            current.itemInRoom = null;
+                            break;
+                        }
+                    case "5":
+                        //move rooms
+                        break;
+                    case "6":
                         gameEnd = true;
                         break;
+                    
+
 
                 }
-                //if (command == "1")
-                //{
-                //    if (current.roomCreature == null)
-                //    {
-                //        Console.WriteLine("The creature is dead! It cannot fight anymore!");
-                //    }
-                //    else
-                //        you.fight(current.roomCreature);
-                //}
-                //if (command == "2")
-                //{
-                //    gameEnd = true;
-                //}
+
             }
 
             Console.WriteLine("Press enter to leave the game.");
