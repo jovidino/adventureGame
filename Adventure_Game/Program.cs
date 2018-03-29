@@ -42,6 +42,23 @@ namespace Adventure_Game
                 return false;
         }
 
+        public void consumeItem(string item)
+        {
+            if(item == "small potion")
+            {
+                this.creatureHitPoints += 10;
+            }
+            if(item == "medium potion")
+            {
+                this.creatureHitPoints += 20;
+                this.creatureArmor -= 1;
+            }
+            if(item == "large potion")
+            {
+                this.creatureHitPoints += 30;
+                this.creatureArmor -= 2;
+            }
+        }
 
         //method for fighting
         public void fight(Creature c)
@@ -49,6 +66,7 @@ namespace Adventure_Game
             Random rnd = new Random();
             while(this.IsAlive() && c.IsAlive())
             {
+                Console.WriteLine();
                 for(int i=0; i < creatureWeapon.numSwings; i++)
                 {
                     //roll to see if fighter can even attempt to do damage 1-20 and compare to the opponent's armor value
@@ -56,13 +74,14 @@ namespace Adventure_Game
                     //check to see if the roll is greater than the creature being attacked armor value
                     if (attackAttempt > c.creatureArmor)
                     {
+                        //generate damage and subtract hp
                         int dmg = rnd.Next(1,creatureWeapon.physicalAttack);
                         c.creatureHitPoints -= dmg;
                         Console.WriteLine("{0} hit {1} for {2} damage!", this.creatureName, c.creatureName, dmg);
                     }
                     else
                     {
-                        Console.WriteLine("{0} couldn't hit through {1}'s armour!", this.creatureName, c.creatureName);
+                        Console.WriteLine("{0} couldn't hit through {1}'s armor!", this.creatureName, c.creatureName);
                     }
                     
                 }
@@ -105,8 +124,18 @@ namespace Adventure_Game
         {
             creatureWeapon = wep;
         }
+        public void AddItem(string itemToAdd)
+        {
+            int whereToAdd = items.Length;
+            items[whereToAdd] = itemToAdd;
+        }
+        public void ShowInventory()
+        {
+            //Console.WriteLine("[{0}]", string.Join(", ", yourArray));
+            Console.WriteLine("{0}", string.Join(",", items));
+        }
 
-       
+
     }
 
     class Goblin : Creature
@@ -216,6 +245,31 @@ namespace Adventure_Game
 
     }
 
+    class Room
+    {
+        public Creature roomCreature;
+        public String itemInRoom;
+        public int gp;
+        public int[] exit;
+
+        //constructor for the room
+        public Room(Creature cr, String it, int g, int[] ex)
+        {
+            roomCreature = cr;
+            itemInRoom = it;
+            gp = g;
+            exit = ex;
+            
+        }
+        //method to print what's in the room
+        public void DisplayInformation()
+        {
+            Console.WriteLine("The room has a {0} and a {1} in it", roomCreature.creatureName, itemInRoom);
+            
+
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -223,6 +277,8 @@ namespace Adventure_Game
             Hero you = new Hero();
             //variables
             string characterName;
+
+            //create rooms
 
 
             //to do: initialize rooms, can just hardcode if we want
