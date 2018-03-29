@@ -8,8 +8,10 @@ namespace Adventure_Game
         public string creatureName;
         public int creatureStartingHitPoints;
         public int creatureHitPoints;
+
         //aggression on scale of 1-10
         public int creatureAgro;
+
         //Armor up to 20
         public int creatureArmor;
         public Weapon creatureWeapon;
@@ -48,28 +50,35 @@ namespace Adventure_Game
         //method call to consume item
         public void consumeItem(string item)
         {
-            if(item == "small potion")
+            if(item == "Small Potion")
             {
                 this.creatureHitPoints += 10;
             }
-            if(item == "medium potion")
+            if(item == "Medium Potion")
             {
                 this.creatureHitPoints += 20;
                 this.creatureArmor -= 1;
             }
-            if(item == "large potion")
+            if(item == "Large Potion")
             {
                 this.creatureHitPoints += 30;
                 this.creatureArmor -= 2;
             }
 
             //check to see if the creature's hitpoints didn't go over initial values, if so then reset to default
-            if (this.creatureHitPoints > this.creatureStartingHitPoints)
+            if (this.creatureHitPoints > this.creatureStartingHitPoints )
             {
                 this.creatureHitPoints = this.creatureStartingHitPoints;
             }
 
-            //now to see if the opponent get's agro
+            //check to see if the hero's armor value didn't go all the way down to 0 or less
+            if (this.creatureArmor <= 0)
+            {
+                //yay you get 1 armor
+                this.creatureArmor = 1;
+            }
+
+            //Now get rid of the item from the item list
 
 
         }
@@ -102,7 +111,7 @@ namespace Adventure_Game
                     
                 }
                 //Random sleep to put in if the user wants to see the progression
-                //System.Threading.Thread.Sleep(4000);
+                System.Threading.Thread.Sleep(2000);
                 if (c.IsAlive())
                     c.fight(this);
                 else
@@ -373,10 +382,10 @@ namespace Adventure_Game
             int turn = 1;
 
             //create rooms -- just decided to hardcode it all
-            Room[] rooms = new Room[8];
+            Room[] rooms = new Room[9];
             Room current;
 
-            Room room0 = new Room(null, "Small Potion", 3, new int[] { 1 });
+            Room room0 = new Room(null, "Small Potion", 0, new int[] { 1 });
             rooms[0] = room0;
 
             Goblin G1 = new Goblin();
@@ -450,7 +459,11 @@ namespace Adventure_Game
                 {
                     //room creature is dead
                     current.roomCreature = null;
-                    you.coinBag += current.gp;
+                    if (current.gp != 0)
+                    {
+                        Console.WriteLine("Creature defeated! You found {0} gp!", current.gp);
+                        you.coinBag += current.gp;
+                    }
                     current.gp = 0;
                 }
                 else 
@@ -458,7 +471,11 @@ namespace Adventure_Game
                     if (current.roomCreature.rollAgro() && turn == 0)
                     {
                         you.fight(current.roomCreature);
-                        you.coinBag += current.gp;
+                        if (current.gp != 0)
+                        {
+                            Console.WriteLine("Creature defeated! You found {0} gp!", current.gp);
+                            you.coinBag += current.gp;
+                        }
                         current.gp = 0;
                     }
                     else
@@ -500,7 +517,7 @@ namespace Adventure_Game
                         item = current.itemInRoom;
                         if (item == "nothing")
                         {
-                            Console.WriteLine("There are no items left in the room");
+                            Console.WriteLine("There are no items left in the room to take.");
                             break;
                         }
                         else
@@ -513,6 +530,10 @@ namespace Adventure_Game
 
                     case "5":
                         //backpack
+                        foreach(var backpackItem in you.items)
+                        {
+                            Console.WriteLine(string.Join("|", you.items));
+                        }
                         break;
 
                     case "6":
@@ -548,8 +569,11 @@ namespace Adventure_Game
 
             }
 
-            //to
+            /*todo: Refine the purchase method
 
+             * create new creature
+
+             */
             Console.WriteLine("Press enter to leave the game.");
             //prevents console from closing
             Console.ReadLine();
