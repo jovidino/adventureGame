@@ -139,7 +139,9 @@ namespace Adventure_Game
     class Hero : Creature
     {
         //Hero can have 6 items
-        int numItems = 0;
+        public int numItems = 0;
+        //coins for purchasing
+        public int coinBag;
         public string[] items = new string[6];
         public Weapon wep = new Sword(); 
 
@@ -149,6 +151,7 @@ namespace Adventure_Game
         */
         public Hero () : base ("", 50, 0, 10)
         {
+            coinBag = 0;
             creatureWeapon = wep;
         }
         public void AddItem(string itemToAdd)
@@ -163,6 +166,27 @@ namespace Adventure_Game
             Console.WriteLine("{0}", string.Join(",", items));
         }
 
+        public void Purchase(string itemToBuy)
+        {
+            if (this.numItems == 6)
+            {
+                Console.WriteLine("Cannot buy any items... Get rid of some from the bag");
+            }
+            if (itemToBuy == "Small Potion")
+            {
+                this.creatureHitPoints += 10;
+            }
+            if (itemToBuy == "Medium Potion")
+            {
+                this.creatureHitPoints += 20;
+                this.creatureArmor -= 1;
+            }
+            if (itemToBuy == "Large Potion")
+            {
+                this.creatureHitPoints += 30;
+                this.creatureArmor -= 2;
+            }
+        }
         
 
 
@@ -207,6 +231,7 @@ namespace Adventure_Game
             specialAttack = true;
         }
     }
+
 
     //Final boss?
     class FinalBoss : Creature
@@ -342,6 +367,7 @@ namespace Adventure_Game
             bool gameEnd = false;
             string command;
             string item;
+            string itemToConsume;
             int roomToMoveTo = 0;
             //0 - creature can roll to agro 1 - user can go through menu
             int turn = 1;
@@ -359,8 +385,36 @@ namespace Adventure_Game
 
             Goblin G2 = new Goblin();
             Room room2 = new Room(G2, "nothing", 5, new int[] { 1, 3, 5 });
+            rooms[2] = room2;
+
+            LesserDemon L1 = new LesserDemon();
+            Room room3 = new Room(L1, "Medium Potion", 20, new int[]{2, 4 });
+            rooms[3] = room3;
+
+            //room 4 will have a nice weap since the golem is hard to kill
+            Golem GL1 = new Golem();
+            Room room4 = new Room(GL1, "Large Potion", 40, new int[] { 3 });
+            rooms[4] = room4;
+
+            //room 5 just a normal room with a weak enemy
+            Goblin G3 = new Goblin();
+            Room room5 = new Room(G3, "nothing", 4, new int[] { 6, 7 });
+            rooms[5] = room5;
+
+            //room 6 medium room
+            LesserDemon L2 = new LesserDemon();
+            Room room6 = new Room(L2, "Medium Potion", 10, new int[] { 5 });
+            rooms[6] = room6;
+
+            //make a new creature for room 7
 
 
+
+
+            //room 8 final boss
+            FinalBoss FB = new FinalBoss();
+            Room room8 = new Room(FB, "asdfasdf", 1000000, new int[] { 9 });
+            rooms[8] = room8;
 
             //to do: initialize rooms, can just hardcode if we want
             Console.WriteLine("|--------------------------------------------|");
@@ -396,12 +450,16 @@ namespace Adventure_Game
                 {
                     //room creature is dead
                     current.roomCreature = null;
+                    you.coinBag += current.gp;
+                    current.gp = 0;
                 }
                 else 
                 {
                     if (current.roomCreature.rollAgro() && turn == 0)
                     {
                         you.fight(current.roomCreature);
+                        you.coinBag += current.gp;
+                        current.gp = 0;
                     }
                     else
                         Console.WriteLine("The creature in the room doesn't attack but stays watching");
@@ -413,6 +471,7 @@ namespace Adventure_Game
                 switch (command)
                 {
                     case "1":
+                        //fight
                         if (current.roomCreature == null)
                         {
                             Console.WriteLine("The creature is dead! It cannot fight anymore!");
@@ -423,13 +482,21 @@ namespace Adventure_Game
                             you.fight(current.roomCreature);
                         }
                         break;
+
                     case "2":
                         //use item
+                        Console.WriteLine("\nWhich item do you want to consume?");
+                        itemToConsume = Console.ReadLine();
+                        you.consumeItem(itemToConsume);
                         break;
+
                     case "3":
+                        //Display information about the room to the user
                         current.DisplayInformation();
                         break;
+
                     case "4":
+                        //add item to bag
                         item = current.itemInRoom;
                         if (item == "nothing")
                         {
@@ -438,15 +505,19 @@ namespace Adventure_Game
                         }
                         else
                         {
+                            //add item and then change the item in the room to nothing
                             you.AddItem(item);
                             current.itemInRoom = "nothing";
                             break;
                         }
+
                     case "5":
                         //backpack
                         break;
+
                     case "6":
-                        //Hero info
+                        //Hero info, 
+                        Console.WriteLine("\nHero Info: HP:{0}, ARMOR:{1}, WEAPON:{2}", you.creatureHitPoints, you.creatureArmor, you.creatureWeapon.weaponName);
                         break;
                     case "7":
                         //move rooms
@@ -469,14 +540,15 @@ namespace Adventure_Game
 
                         break;
                     case "8":
+                        //leave the game
                         gameEnd = true;
                         break;
-                    
-
-
+                   
                 }
 
             }
+
+            //to
 
             Console.WriteLine("Press enter to leave the game.");
             //prevents console from closing
