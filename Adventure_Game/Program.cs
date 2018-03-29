@@ -349,6 +349,11 @@ namespace Adventure_Game
             //fought titsMcGee just to see if the dying text worked out
             you.fight(titsMcGee);
 
+
+            //make menu
+
+
+
             //prevents console from closing
             Console.ReadLine();
         }
