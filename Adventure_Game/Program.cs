@@ -6,25 +6,28 @@ namespace Adventure_Game
     class Creature
     {
         public string creatureName;
+        public int creatureStartingHitPoints;
         public int creatureHitPoints;
         //aggression on scale of 1-10
         public int creatureAgro;
-        //
+        //Armor up to 20
         public int creatureArmor;
         public Weapon creatureWeapon;
+        public bool specialAttack;
        
         public Creature()
         {
             creatureName = "name";
             creatureHitPoints = 1;
         }
+        //base creature class
         public Creature (string name, int hitPoints, int agro, int armor)
         {
             creatureName = name;
             creatureHitPoints = hitPoints;
             creatureAgro = agro;
             creatureArmor = armor;
-            
+            creatureStartingHitPoints = hitPoints;
         }
 
         public int getHP()
@@ -42,6 +45,7 @@ namespace Adventure_Game
                 return false;
         }
 
+        //method call to consume item
         public void consumeItem(string item)
         {
             if(item == "small potion")
@@ -58,6 +62,14 @@ namespace Adventure_Game
                 this.creatureHitPoints += 30;
                 this.creatureArmor -= 2;
             }
+
+            //check to see if the creature's hitpoints didn't go over initial values, if so then reset to default
+            if (this.creatureHitPoints > this.creatureStartingHitPoints)
+            {
+                this.creatureHitPoints = this.creatureStartingHitPoints;
+            }
+
+
         }
 
         //method for fighting
@@ -66,6 +78,8 @@ namespace Adventure_Game
             Random rnd = new Random();
             while(this.IsAlive() && c.IsAlive())
             {
+                //write usage of a special attack
+
                 Console.WriteLine();
                 for(int i=0; i < creatureWeapon.numSwings; i++)
                 {
@@ -154,23 +168,46 @@ namespace Adventure_Game
     class LesserDemon : Creature
     {
         public Weapon wep = new DemonClaws();
-        public LesserDemon () : base("Lesser Demon", 30, 4, 12)
+        /*
+         * lesser demon defaults to 30 hp, 4 aggression, 10 armor
+        */
+        public LesserDemon () : base("Lesser Demon", 30, 4, 10)
         {
             creatureWeapon = wep;
         }
     }
 
-    class Skeleton : Creature
+    class Golem : Creature
     {
         public Weapon wep = new Sword();
         /*
-         * skeleton defaults to 20 hp, 5 aggression, 8 armor
+         * skeleton defaults to 40 hp, 6 aggression, 15 armor
          * 
          */
 
-        public Skeleton() : base("Skeleton", 20, 5, 8)
+        public Golem() : base("Golem", 40, 6, 15)
         {
             creatureWeapon = wep;
+            specialAttack = true;
+        }
+    }
+
+    //Final boss?
+    class FinalBoss : Creature
+    {
+        /*
+         * Idk what to make the weapon - should it be able to attack a lot for little damage each time or 1 big hit
+         * pretty much will always agro after item usage
+         * high hp but not much armor so that the hero is able to get damage in
+         * 
+         * 
+         */
+        //idk what to make the weapon
+
+        //pretty much will always agro after item usage
+        public FinalBoss() : base("FINAL BOSS", 100, 10, 9)
+        {
+
         }
     }
 
@@ -183,6 +220,7 @@ namespace Adventure_Game
         public int numSwings;
         public int magicAttack;
         public int physicalAttack;
+        public string weaponName;
 
         public Weapon(int n, int p, int m)
         {
@@ -199,7 +237,7 @@ namespace Adventure_Game
          */
         public Dagger() : base(3, 4, 0)
         {
-
+            weaponName = "Dagger";
         }
     }
 
@@ -207,7 +245,7 @@ namespace Adventure_Game
     {
         public Sword() : base(2, 5, 0)
         {
-
+            weaponName = "Sword";
         }
     }
 
@@ -215,7 +253,7 @@ namespace Adventure_Game
     {
         public DemonClaws() : base (1, 8, 0)
         {
-
+            weaponName = "Demon Claws";
         }
     }
 
@@ -223,7 +261,7 @@ namespace Adventure_Game
     {
         public TwoHander() : base(1, 14, 0)
         {
-
+            weaponName = "Two Hander";
         }
         //make sure when Two Hander is equiped have no other item in hand
     }
@@ -264,8 +302,14 @@ namespace Adventure_Game
         //method to print what's in the room
         public void DisplayInformation()
         {
-            Console.WriteLine("The room has a {0} and a {1} in it", roomCreature.creatureName, itemInRoom);
-            
+            if (this.roomCreature == null)
+            {
+                Console.WriteLine("The room has a no creature and a {0} in it", itemInRoom);
+            }
+            else
+            {
+                Console.WriteLine("The room has a {0} and a {1} in it", roomCreature.creatureName, itemInRoom);
+            }
 
         }
     }
@@ -279,7 +323,9 @@ namespace Adventure_Game
             string characterName;
 
             //create rooms
-
+            Room room0 = new Room(null, "smallPotion", 3, new int[] { 1 });
+            Goblin G1 = new Goblin();
+            Room room1 = new Room(G1, "smallPotion", 10, new int[] { 0, 2 });
 
             //to do: initialize rooms, can just hardcode if we want
 
@@ -289,18 +335,18 @@ namespace Adventure_Game
             characterName = Console.ReadLine();
             you.creatureName = characterName;
             Console.WriteLine("Name is: {0} Hp is: {1}", you.creatureName, you.getHP());
-            Console.WriteLine("He has a {0}", you.creatureWeapon.ToString());
+            Console.WriteLine("He has a {0}", you.creatureWeapon.weaponName);
             
             //did this shit just to see if classes worked
             Goblin bob = new Goblin();
             Console.WriteLine("Name is: {0} Hp is: {1}", bob.creatureName, bob.creatureHitPoints);
-
+            Console.WriteLine("He has a {0}", bob.creatureWeapon.weaponName);
 
             you.fight(bob);
 
             LesserDemon titsMcGee = new LesserDemon();
             Console.WriteLine("Name is: {0} Hp is: {1} ", titsMcGee.creatureName, titsMcGee.creatureHitPoints);
-
+            //fought titsMcGee just to see if the dying text worked out
             you.fight(titsMcGee);
 
             //prevents console from closing
