@@ -70,7 +70,14 @@ namespace Adventure_Game
                     c.fight(this);
                 else
                 {
-                    Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);
+                    if (this is Hero)
+                    {
+                        Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);
+                    }
+                    else
+                    {
+                        Console.WriteLine("GAME OVER");
+                    }
                     //return 1;
                 }
             }
