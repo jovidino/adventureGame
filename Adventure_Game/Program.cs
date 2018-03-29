@@ -247,6 +247,11 @@ namespace Adventure_Game
 
             you.fight(titsMcGee);
 
+
+            //make menu
+
+
+
             //prevents console from closing
             Console.ReadLine();
         }
