@@ -235,7 +235,7 @@ namespace Adventure_Game
             Console.WriteLine("Name is: {0} Hp is: {1}", you.creatureName, you.getHP());
             Console.WriteLine("He has a {0}", you.creatureWeapon.ToString());
             
-
+            //did this shit just to see if classes worked
             Goblin bob = new Goblin();
             Console.WriteLine("Name is: {0} Hp is: {1}", bob.creatureName, bob.creatureHitPoints);
 
