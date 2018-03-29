@@ -671,11 +671,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Jovid\\source\\repos\\Adventure_Game\\Adventure_Game\\Adventure_Game.csproj",
+      "projectUniqueName": "C:\\Users\\Jovid\\source\\repos\\adventureGame\\adventureGame\\Adventure_Game\\Adventure_Game.csproj",
       "projectName": "Adventure_Game",
-      "projectPath": "C:\\Users\\Jovid\\source\\repos\\Adventure_Game\\Adventure_Game\\Adventure_Game.csproj",
+      "projectPath": "C:\\Users\\Jovid\\source\\repos\\adventureGame\\adventureGame\\Adventure_Game\\Adventure_Game.csproj",
       "packagesPath": "C:\\Users\\Jovid\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jovid\\source\\repos\\Adventure_Game\\Adventure_Game\\obj\\",
+      "outputPath": "C:\\Users\\Jovid\\source\\repos\\adventureGame\\adventureGame\\Adventure_Game\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
