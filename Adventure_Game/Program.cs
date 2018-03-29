@@ -51,6 +51,7 @@ namespace Adventure_Game
             {
                 for(int i=0; i < creatureWeapon.numSwings; i++)
                 {
+                    //roll to see if fighter can even attempt to do damage 1-20 and compare to the opponent's armor value
                     int attackAttempt = rnd.Next(1, 21);
                     //check to see if the roll is greater than the creature being attacked armor value
                     if (attackAttempt > c.creatureArmor)
@@ -65,24 +66,26 @@ namespace Adventure_Game
                     }
                     
                 }
+                //Random sleep to put in if the user wants to see the progression
                 //System.Threading.Thread.Sleep(4000);
                 if (c.IsAlive())
                     c.fight(this);
                 else
                 {
+                    //Hero wins the fight
                     if (this is Hero)
                     {
                         Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);
                     }
+                    //Hero dies to the creature
                     else
                     {
                         Console.WriteLine("GAME OVER");
                     }
-                    //return 1;
+                    
                 }
             }
-            //if(IsAlive())
-            //Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);
+            
 
 
         }
@@ -100,7 +103,6 @@ namespace Adventure_Game
         */
         public Hero () : base ("", 50, 0, 10)
         {
-            
             creatureWeapon = wep;
         }
 
@@ -123,7 +125,21 @@ namespace Adventure_Game
     class LesserDemon : Creature
     {
         public Weapon wep = new DemonClaws();
-        public LesserDemon () : base("Lesser Demon", 20, 4, 12)
+        public LesserDemon () : base("Lesser Demon", 30, 4, 12)
+        {
+            creatureWeapon = wep;
+        }
+    }
+
+    class Skeleton : Creature
+    {
+        public Weapon wep = new Sword();
+        /*
+         * skeleton defaults to 20 hp, 5 aggression, 8 armor
+         * 
+         */
+
+        public Skeleton() : base("Skeleton", 20, 5, 8)
         {
             creatureWeapon = wep;
         }
@@ -170,6 +186,7 @@ namespace Adventure_Game
     {
         public DemonClaws() : base (1, 8, 0)
         {
+
         }
     }
 
