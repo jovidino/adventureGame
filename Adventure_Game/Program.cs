@@ -69,6 +69,8 @@ namespace Adventure_Game
                 this.creatureHitPoints = this.creatureStartingHitPoints;
             }
 
+            //now to see if the opponent get's agro
+
 
         }
 
@@ -161,10 +163,7 @@ namespace Adventure_Game
             Console.WriteLine("{0}", string.Join(",", items));
         }
 
-        public int MoveRooms()
-        {
-            return 1;
-        }
+        
 
 
     }
@@ -343,25 +342,31 @@ namespace Adventure_Game
             bool gameEnd = false;
             string command;
             string item;
-            int roomToMoveTo;
+            int roomToMoveTo = 0;
             //0 - creature can roll to agro 1 - user can go through menu
             int turn = 1;
 
-            //create rooms
+            //create rooms -- just decided to hardcode it all
             Room[] rooms = new Room[8];
             Room current;
-            Room room0 = new Room(null, "smallPotion", 3, new int[] { 1 });
+
+            Room room0 = new Room(null, "Small Potion", 3, new int[] { 1 });
             rooms[0] = room0;
+
             Goblin G1 = new Goblin();
-            Room room1 = new Room(G1, "smallPotion", 10, new int[] { 0, 2 });
+            Room room1 = new Room(G1, "Small Potion", 10, new int[] { 0, 2 });
             rooms[1] = room1;
+
+            Goblin G2 = new Goblin();
+            Room room2 = new Room(G2, "nothing", 5, new int[] { 1, 3, 5 });
+
 
 
             //to do: initialize rooms, can just hardcode if we want
-
-            Console.WriteLine("Welcome to the Start of the Adventure Game");
-            Console.WriteLine("-------------------------------------------");
-            Console.WriteLine("What is your character's name? ");
+            Console.WriteLine("|--------------------------------------------|");
+            Console.WriteLine("| Welcome to the Start of the Adventure Game |");
+            Console.WriteLine("|--------------------------------------------|");
+            Console.WriteLine("\nWhat is your character's name? ");
             characterName = Console.ReadLine();
             you.creatureName = characterName;
             Console.WriteLine("Name is: {0} Hp is: {1}", you.creatureName, you.getHP());
@@ -387,16 +392,12 @@ namespace Adventure_Game
             while (you.IsAlive() && gameEnd != true)
             {
                 //first check to see if there is an enemy in the room.. then check to see if it will auto agro
-                if (current.roomCreature == null)
-                {
-                    //do nothing and continue on
-                }
-                else if (current.roomCreature.creatureHitPoints == 0 || current.roomCreature == null)
+                if (current.roomCreature == null || current.roomCreature.creatureHitPoints < 1)
                 {
                     //room creature is dead
                     current.roomCreature = null;
                 }
-                else
+                else 
                 {
                     if (current.roomCreature.rollAgro() && turn == 0)
                     {
@@ -407,7 +408,7 @@ namespace Adventure_Game
                     
                 }
                 
-                Console.WriteLine("menu: (1) fight, (2) use item, (3) display what's in room, (4) pick up items, (5) move rooms, (6) exit game");
+                Console.WriteLine("menu: (1) fight, (2) use item, (3) display what's in room, (4) pick up items, (5) backpack \n\t(6)Hero Info (7) move rooms, (8) exit game ");
                 command = Console.ReadLine();
                 switch (command)
                 {
@@ -442,18 +443,32 @@ namespace Adventure_Game
                             break;
                         }
                     case "5":
+                        //backpack
+                        break;
+                    case "6":
+                        //Hero info
+                        break;
+                    case "7":
                         //move rooms
+                        turn = 0;
                         Console.WriteLine("Here are the exits for this room");
                         foreach(var ex in current.exit)
                         {
                             Console.WriteLine(string.Join(",", current.exit));
                         }
+                        try
+                        {                  
                         Console.WriteLine("Which room do you want to exit to?");
                         roomToMoveTo = Convert.ToInt32(Console.ReadLine());
-
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Insert a proper number!");
+                        }
+                        current = rooms[roomToMoveTo];
 
                         break;
-                    case "6":
+                    case "8":
                         gameEnd = true;
                         break;
                     
