@@ -109,6 +109,8 @@ namespace Adventure_Game
                     if (this is Hero)
                     {
                         Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);
+                        
+                        
                     }
                     //Hero dies to the creature
                     else
@@ -123,7 +125,16 @@ namespace Adventure_Game
 
         }
 
-
+        public bool rollAgro()
+        {
+            Random rnd = new Random();
+            int chance = rnd.Next(1, 11);
+            if ((chance + this.creatureAgro) > 8)
+            {
+                return true;
+            }
+            else return false;
+        }
     }
     class Hero : Creature
     {
@@ -321,11 +332,18 @@ namespace Adventure_Game
             Hero you = new Hero();
             //variables
             string characterName;
+            bool gameEnd = false;
+            string command;
 
             //create rooms
+            Room[] rooms = new Room[8];
+            Room current;
             Room room0 = new Room(null, "smallPotion", 3, new int[] { 1 });
+            rooms[0] = room0;
             Goblin G1 = new Goblin();
             Room room1 = new Room(G1, "smallPotion", 10, new int[] { 0, 2 });
+            rooms[1] = room1;
+
 
             //to do: initialize rooms, can just hardcode if we want
 
@@ -336,7 +354,8 @@ namespace Adventure_Game
             you.creatureName = characterName;
             Console.WriteLine("Name is: {0} Hp is: {1}", you.creatureName, you.getHP());
             Console.WriteLine("He has a {0}", you.creatureWeapon.weaponName);
-            
+
+            /*
             //did this shit just to see if classes worked
             Goblin bob = new Goblin();
             Console.WriteLine("Name is: {0} Hp is: {1}", bob.creatureName, bob.creatureHitPoints);
@@ -348,12 +367,67 @@ namespace Adventure_Game
             Console.WriteLine("Name is: {0} Hp is: {1} ", titsMcGee.creatureName, titsMcGee.creatureHitPoints);
             //fought titsMcGee just to see if the dying text worked out
             you.fight(titsMcGee);
-
+            */
+            current = room1;
+            current.DisplayInformation();
 
             //make menu
+            while (you.IsAlive() && gameEnd != true)
+            {
+                //first check to see if there is an enemy in the room.. then check to see if it will auto agro
+                if (current.roomCreature == null)
+                {
+                    //do nothing and continue on
+                }
+                else if (current.roomCreature.creatureHitPoints == 0 || current.roomCreature == null)
+                {
+                    //room creature is dead
+                    current.roomCreature = null;
+                }
+                else
+                {
+                    if (current.roomCreature.rollAgro())
+                    {
+                        you.fight(current.roomCreature);
+                    }
+                    else
+                        Console.WriteLine("The creature in the room doesn't attack but stays watching");
+                    //Console.WriteLine(current.roomCreature.creatureHitPoints);
+                }
+                
+                Console.WriteLine("menu: (1) fight, (2) exit game");
+                command = Console.ReadLine();
+                switch (command)
+                {
+                    case "1":
+                        if (current.roomCreature == null)
+                        {
+                            Console.WriteLine("The creature is dead! It cannot fight anymore!");
+                        }
+                        else
+                            you.fight(current.roomCreature);
+                        break;
+                    case "2":
+                        gameEnd = true;
+                        break;
 
+                }
+                //if (command == "1")
+                //{
+                //    if (current.roomCreature == null)
+                //    {
+                //        Console.WriteLine("The creature is dead! It cannot fight anymore!");
+                //    }
+                //    else
+                //        you.fight(current.roomCreature);
+                //}
+                //if (command == "2")
+                //{
+                //    gameEnd = true;
+                //}
+            }
 
-
+            Console.WriteLine("Press enter to leave the game.");
             //prevents console from closing
             Console.ReadLine();
         }
