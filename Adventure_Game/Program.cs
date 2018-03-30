@@ -223,9 +223,9 @@ namespace Adventure_Game
 
     class Golem : Creature
     {
-        public Weapon wep = new Sword();
+        public Weapon wep = new Boulder();
         /*
-         * skeleton defaults to 40 hp, 6 aggression, 15 armor
+         * Golem defaults to 40 hp, 6 aggression, 15 armor
          * 
          */
 
@@ -240,19 +240,13 @@ namespace Adventure_Game
     //Final boss?
     class FinalBoss : Creature
     {
-        /*
-         * Idk what to make the weapon - should it be able to attack a lot for little damage each time or 1 big hit
-         * pretty much will always agro after item usage
-         * high hp but not much armor so that the hero is able to get damage in
-         * 
-         * 
-         */
-        //idk what to make the weapon
+       
+        public Weapon wep = new TwoHander();
 
         //pretty much will always agro after item usage
-        public FinalBoss() : base("FINAL BOSS", 100, 10, 9)
+        public FinalBoss() : base("The Emperor of Palamecia, Lord Master of Hell", 100, 10, 9)
         {
-
+            creatureWeapon = wep;
         }
     }
 
@@ -311,6 +305,14 @@ namespace Adventure_Game
         //make sure when Two Hander is equiped have no other item in hand
     }
 
+    class Boulder : Weapon
+    {
+        public Boulder() : base(1, 15, 0)
+        {
+            weaponName = "Boulder";
+        }
+        //make sure when Two Hander is equiped have no other item in hand
+    }
     //Armour class with subclasses below it
     class Armor
     {
@@ -424,7 +426,7 @@ namespace Adventure_Game
 
             //room 6 medium room
             LesserDemon L2 = new LesserDemon();
-            Room room6 = new Room(L2, "Medium Potion", 10, new int[] { 5 });
+            Room room6 = new Room(L2, "Large Potion", 10, new int[] { 5 });
             rooms[6] = room6;
 
             //room 7 give chestplate for final boss
@@ -434,7 +436,7 @@ namespace Adventure_Game
 
             //room 8 final boss
             FinalBoss FB = new FinalBoss();
-            Room room8 = new Room(FB, "asdfasdf", 1000000, new int[] {7, 9 });
+            Room room8 = new Room(FB, "The Emperor of Palamecia, Lord Master of Hell's Head", 1000000, new int[] {7, 9 });
             rooms[8] = room8;
 
             //to do: initialize rooms, can just hardcode if we want
