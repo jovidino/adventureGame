@@ -15,6 +15,7 @@ namespace Adventure_Game
         //Armor up to 20
         public int creatureArmor;
         public Weapon creatureWeapon;
+        public Armor creatureArmorName;
         public bool specialAttack;
        
         public Creature()
@@ -47,41 +48,6 @@ namespace Adventure_Game
                 return false;
         }
 
-        //method call to consume item
-        public void consumeItem(string item)
-        {
-            if(item == "Small Potion")
-            {
-                this.creatureHitPoints += 10;
-            }
-            if(item == "Medium Potion")
-            {
-                this.creatureHitPoints += 20;
-                this.creatureArmor -= 1;
-            }
-            if(item == "Large Potion")
-            {
-                this.creatureHitPoints += 30;
-                this.creatureArmor -= 2;
-            }
-
-            //check to see if the creature's hitpoints didn't go over initial values, if so then reset to default
-            if (this.creatureHitPoints > this.creatureStartingHitPoints )
-            {
-                this.creatureHitPoints = this.creatureStartingHitPoints;
-            }
-
-            //check to see if the hero's armor value didn't go all the way down to 0 or less
-            if (this.creatureArmor <= 0)
-            {
-                //yay you get 1 armor
-                this.creatureArmor = 1;
-            }
-
-            //Now get rid of the item from the item list
-
-
-        }
 
         //method for fighting
         public void fight(Creature c)
@@ -119,7 +85,8 @@ namespace Adventure_Game
                     //Hero wins the fight
                     if (this is Hero)
                     {
-                        Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints);                        
+                        Console.WriteLine("The fight is over! {0} won! and has {1} HP remaining...", this.creatureName, this.creatureHitPoints); 
+                        
                     }
                     //Hero dies to the creature
                     else
@@ -149,10 +116,11 @@ namespace Adventure_Game
     {
         //Hero can have 6 items
         public int numItems = 0;
-        //coins for purchasing
         public int coinBag;
         public string[] items = new string[6];
-        public Weapon wep = new Sword(); 
+        public Weapon wep = new Sword();
+        public Armor arm = new Armor();
+        public int damageDealt = 0;
 
         /* hero starts with 10 armor and when additional items are picked up then he gains more armor
          * base hp: 50, agro: 0 since user, name given in the beginning of program
@@ -162,10 +130,11 @@ namespace Adventure_Game
         {
             coinBag = 0;
             creatureWeapon = wep;
+            items = new string[6];
         }
         public void AddItem(string itemToAdd)
         {
-            //int whereToAdd = items.Length;
+            
             items[numItems] = itemToAdd;
             numItems++;
         }
@@ -175,28 +144,54 @@ namespace Adventure_Game
             Console.WriteLine("{0}", string.Join(",", items));
         }
 
-        public void Purchase(string itemToBuy)
+
+        //method call to consume item
+        public void consumeItem(string item, int index)
         {
-            if (this.numItems == 6)
-            {
-                Console.WriteLine("Cannot buy any items... Get rid of some from the bag");
-            }
-            if (itemToBuy == "Small Potion")
+            
+            if (item == "Small Potion")
             {
                 this.creatureHitPoints += 10;
+                numItems--;
+                
             }
-            if (itemToBuy == "Medium Potion")
+            if (item == "Medium Potion")
             {
                 this.creatureHitPoints += 20;
                 this.creatureArmor -= 1;
+                numItems--;
             }
-            if (itemToBuy == "Large Potion")
+            if (item == "Large Potion")
             {
                 this.creatureHitPoints += 30;
                 this.creatureArmor -= 2;
+                numItems--;
             }
+
+            if (item == "Chestplate")
+            {
+                this.creatureArmor += 5;
+            }
+
+            //check to see if the creature's hitpoints didn't go over initial values, if so then reset to default
+            if (this.creatureHitPoints > this.creatureStartingHitPoints)
+            {
+                this.creatureHitPoints = this.creatureStartingHitPoints;
+            }
+
+            //check to see if the hero's armor value didn't go all the way down to 0 or less
+            if (this.creatureArmor <= 0)
+            {
+                //yay you get 1 armor
+                this.creatureArmor = 1;
+            }
+
+            //Now get rid of the item from the item list
+            
+            this.items[index] = "";
+
         }
-        
+
 
 
     }
@@ -309,7 +304,7 @@ namespace Adventure_Game
 
     class TwoHander : Weapon
     {
-        public TwoHander() : base(1, 14, 0)
+        public TwoHander() : base(1, 20, 0)
         {
             weaponName = "Two Hander";
         }
@@ -319,19 +314,36 @@ namespace Adventure_Game
     //Armour class with subclasses below it
     class Armor
     {
+        public string armorName;
+        public int armorValue;
+        bool power;
+        public Armor()
+        {
+
+        }
+
+        class Shield : Armor
+        {
+            public Shield() : base()
+            {
+                armorName = "Shield";
+                armorValue = 3;
+                power = false;
+            }
+        }
+
+        class Chestplate : Armor
+        {
+            public Chestplate() : base()
+            {
+                armorName = "Chestplate";
+                armorValue = 5;
+                power = true;
+            }
+        }
 
     }
 
-    
-    class Shield : Armor
-    {
-
-    }
-
-    class ChestPlate : Armor
-    {
-
-    }
 
     class Room
     {
@@ -415,14 +427,14 @@ namespace Adventure_Game
             Room room6 = new Room(L2, "Medium Potion", 10, new int[] { 5 });
             rooms[6] = room6;
 
-            //make a new creature for room 7
-
-
-
+            //room 7 give chestplate for final boss
+            LesserDemon L3 = new LesserDemon();
+            Room room7 = new Room(L3, "Large Potion", 40, new int[] { 5, 8 });
+            rooms[7] = room7;
 
             //room 8 final boss
             FinalBoss FB = new FinalBoss();
-            Room room8 = new Room(FB, "asdfasdf", 1000000, new int[] { 9 });
+            Room room8 = new Room(FB, "asdfasdf", 1000000, new int[] {7, 9 });
             rooms[8] = room8;
 
             //to do: initialize rooms, can just hardcode if we want
@@ -432,26 +444,19 @@ namespace Adventure_Game
             Console.WriteLine("\nWhat is your character's name? ");
             characterName = Console.ReadLine();
             you.creatureName = characterName;
-            Console.WriteLine("Name is: {0} Hp is: {1}", you.creatureName, you.getHP());
-            Console.WriteLine("He has a {0}", you.creatureWeapon.weaponName);
+            Console.WriteLine("Name is: {0} | Hp is: {1} | Armor is: {2}", you.creatureName, you.getHP(), you.creatureArmor);
+            Console.WriteLine("He has a {0}\n", you.creatureWeapon.weaponName);
 
-            /*
-            //did this shit just to see if classes worked
-            Goblin bob = new Goblin();
-            Console.WriteLine("Name is: {0} Hp is: {1}", bob.creatureName, bob.creatureHitPoints);
-            Console.WriteLine("He has a {0}", bob.creatureWeapon.weaponName);
-
-            you.fight(bob);
-
-            LesserDemon titsMcGee = new LesserDemon();
-            Console.WriteLine("Name is: {0} Hp is: {1} ", titsMcGee.creatureName, titsMcGee.creatureHitPoints);
-            //fought titsMcGee just to see if the dying text worked out
-            you.fight(titsMcGee);
-            */
+           
             current = room1;
             current.DisplayInformation();
 
-            //make menu
+            //running the game
+            /*
+             * The game will run as long as the Hero is alive and the gameEnd boolean isn't true
+             * gameEnd is set to true if the user wants to leave the game or if the end of the Room is reached
+             * 
+             */
             while (you.IsAlive() && gameEnd != true)
             {
                 //first check to see if there is an enemy in the room.. then check to see if it will auto agro
@@ -463,6 +468,14 @@ namespace Adventure_Game
                     {
                         Console.WriteLine("Creature defeated! You found {0} gp!", current.gp);
                         you.coinBag += current.gp;
+                        if(current.Equals(room7))
+                        {
+                            you.AddItem("Chestplate");
+                        }
+                        if(current.Equals(room4))
+                        {
+                            you.AddItem("Two Hander");
+                        }
                     }
                     current.gp = 0;
                 }
@@ -502,9 +515,21 @@ namespace Adventure_Game
 
                     case "2":
                         //use item
+                        int inBag = -1;
+                        string[] search;
                         Console.WriteLine("\nWhich item do you want to consume?");
                         itemToConsume = Console.ReadLine();
-                        you.consumeItem(itemToConsume);
+                        search = you.items;
+                        inBag = Array.IndexOf(search, itemToConsume);
+                        if (inBag > -1)
+                        {
+                            you.consumeItem(itemToConsume, inBag);
+                        }
+                        else
+                        {
+                            Console.WriteLine("That isn't in the bag!");
+                        }
+                        
                         break;
 
                     case "3":
@@ -532,7 +557,7 @@ namespace Adventure_Game
                         //backpack
                         foreach(var backpackItem in you.items)
                         {
-                            Console.WriteLine(string.Join("|", you.items));
+                            Console.WriteLine(string.Join("|", backpackItem));
                         }
                         break;
 
@@ -541,12 +566,12 @@ namespace Adventure_Game
                         Console.WriteLine("\nHero Info: HP:{0}, ARMOR:{1}, WEAPON:{2}", you.creatureHitPoints, you.creatureArmor, you.creatureWeapon.weaponName);
                         break;
                     case "7":
+                        bool isThere = false;
                         //move rooms
-                        turn = 0;
                         Console.WriteLine("Here are the exits for this room");
                         foreach(var ex in current.exit)
                         {
-                            Console.WriteLine(string.Join(",", current.exit));
+                            Console.WriteLine(string.Join(",", ex));
                         }
                         try
                         {                  
@@ -557,8 +582,27 @@ namespace Adventure_Game
                         {
                             Console.WriteLine("Insert a proper number!");
                         }
+                        foreach(var ex in current.exit)
+                        {
+                            if(roomToMoveTo == ex)
+                            {
+                                isThere = true;
+                            }
+                        }
+                        if(isThere != true)
+                        {
+                            Console.WriteLine("That's not one of the exit numbers for this room!");
+                            break;
+                        }
                         current = rooms[roomToMoveTo];
-
+                        if (!current.roomCreature.IsAlive() && roomToMoveTo == 9)
+                        {
+                            Console.WriteLine("You beat The Emperor of Palamecia, Lord Master of Hell!!!");
+                            Console.WriteLine("Fin.");
+                            gameEnd = true;
+                            break;
+                        }
+                        turn = 0;
                         break;
                     case "8":
                         //leave the game
@@ -568,13 +612,10 @@ namespace Adventure_Game
                 }
 
             }
+            //Message when beat the game.
+            Console.WriteLine("Final Stats: {0} gp found, {1} hp left, {2} damage dealt", you.coinBag, you.creatureHitPoints, you.damageDealt);
 
-            /*todo: Refine the purchase method
-
-             * create new creature
-
-             */
-            Console.WriteLine("Press enter to leave the game.");
+                Console.WriteLine("Press enter to leave the game.");
             //prevents console from closing
             Console.ReadLine();
         }
